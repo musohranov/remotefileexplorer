@@ -14,11 +14,6 @@ final class Request {
     final String id;
 
     /**
-     * Тип.
-     */
-    final Type type;
-
-    /**
      * Содержимое.
      */
     final String body;
@@ -35,11 +30,6 @@ final class Request {
                 throw new InvalidatedRequest(request, "Идентификатор запроса должен быть заполнен!");
             }
 
-            this.type = getType(jsonData.containsKey("type") ? String.valueOf(jsonData.get("type")) : "");
-            if (this.type == null) {
-                throw new InvalidatedRequest(request, "Не известный тип запроса!");
-            }
-
             this.body = jsonData.containsKey("body") ? String.valueOf(jsonData.get("body")) : "";
             if (this.body.isEmpty()) {
                 throw new InvalidatedRequest(request, "Содержимое запроса должно быть заполнено!");
@@ -48,28 +38,6 @@ final class Request {
         } catch (ParseException e) {
             throw new InvalidatedRequest(request, String.format("Запрос не является json, %s", e.getMessage()));
         }
-    }
-
-    /**
-     * Типы запросов.
-     */
-    enum Type {
-        /**
-         * Команда
-         */
-        Command
-    }
-
-    /**
-     * Получить тип запроса.
-     * @param type Строковое представление запроса.
-     */
-    private static Type getType(final String type) {
-        if (type.equals("command")) {
-            return Type.Command;
-        }
-
-        return null;
     }
 
     /**

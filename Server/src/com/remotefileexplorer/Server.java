@@ -51,18 +51,15 @@ final class Server extends WebSocketServer {
         try {
             request = new Request(message);
 
-            if (request.type == Request.Type.Command) {
-                Command command = Command.getCommand(request.body.toLowerCase());
-
-                if (command.isWriteAccess && !this.writePermission) {
-                    throw new Exception("Команды на запись не разрешены!");
-                }
-
-                String result = command.execute(this.workingDirectory).toString();
-                webSocket.send(result);
-
-                Logger.getGlobal().info(String.format("Результат обработки '%s'", result));
+            Command command = Command.getCommand(request.body.toLowerCase());
+            if (command.isWriteAccess && !this.writePermission) {
+                throw new Exception("Команды на запись не разрешены!");
             }
+
+            String result = command.execute(this.workingDirectory).toString();
+            webSocket.send(result);
+
+            Logger.getGlobal().info(String.format("Результат обработки '%s'", result));
         } catch (Exception e) {
             String result = request == null ? Response.createError(e.getMessage())
                     : Response.createError(request, e.getMessage());

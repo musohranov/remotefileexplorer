@@ -30,7 +30,6 @@ final class Response {
         JSONObject jsonData = new JSONObject();
 
         jsonData.put("request_id", request.id);
-        jsonData.put("request_type", request.type);
         jsonData.put("result_type", "error");
         jsonData.put("result_body", message);
 
@@ -46,7 +45,6 @@ final class Response {
         JSONObject jsonData = new JSONObject();
 
         jsonData.put("request_id", request.id);
-        jsonData.put("request_type", request.type);
         jsonData.put("result_type", "ok");
         jsonData.put("result_body", message);
 
