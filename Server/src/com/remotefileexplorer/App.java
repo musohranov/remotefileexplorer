@@ -1,5 +1,6 @@
 package com.remotefileexplorer;
 
+import com.remotefileexplorer.transport.Server;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;

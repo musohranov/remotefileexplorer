@@ -1,4 +1,4 @@
-package com.remotefileexplorer;
+package com.remotefileexplorer.transport;
 
 import com.remotefileexplorer.command.CommandManager;
 import org.java_websocket.WebSocket;
@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 /**
  * Web сервер обработки запросов (Транспортный уровень абстракции).
  */
-final class Server extends WebSocketServer {
+public final class Server extends WebSocketServer {
     /**
      * Рабочая директория.
      */
@@ -71,7 +71,7 @@ final class Server extends WebSocketServer {
      * @param writePermission Разрешение на запись.
      * @param port Номер порта.
      */
-    static void start(final File workingDirectory, final boolean writePermission, final int port)
+    public static void start(final File workingDirectory, final boolean writePermission, final int port)
             throws IOException, InterruptedException {
 
         Server server = new Server(workingDirectory, writePermission, port);
