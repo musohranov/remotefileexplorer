@@ -4,6 +4,7 @@ import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * Команда "Вывести список файлов".
@@ -13,7 +14,7 @@ final class Dir extends Command {
      * @param commandLine Строка с командой.
      */
     Dir(final String commandLine) throws Exception {
-        super(commandLine, false);
+        super(commandLine, false, "Вывести список файлов директории. Пример dir c:");
 
         if (!(this.name.equals("dir") && this.params.length <= 1)) {
             throw new Exception("Не является командой dir!");
@@ -25,27 +26,20 @@ final class Dir extends Command {
      * @param workingDirectory Рабочая директория.
      */
     @Override
-    public IResult execute(final File workingDirectory) {
-        JSONObject jsonResult = new JSONObject();
+    public String execute(final File workingDirectory) {
+        StringJoiner result = new StringJoiner("\n");
 
         // Если указана под-директория, выполняем команду в контексте нее, иначе из рабочей
         File directory = this.params.length == 0 ? workingDirectory
                 : new File(workingDirectory.getAbsolutePath() + "/" + this.params[0]);
 
         for (File file : Objects.requireNonNull(directory.listFiles())) {
-            JSONObject jsonFile = new JSONObject();
-
-            jsonFile.put("type", file.isDirectory() ? "d" : "f");
-            jsonFile.put("size", file.isDirectory() ? 0 : file.length());
-
-            jsonResult.put(file.getName(), jsonFile);
+            result.add(String.format("%s %s %s",
+                    file.isDirectory() ? "-d-" : "   ",
+                    file.getName(),
+                    file.isDirectory() ? "" : ", " + file.length()));
         }
 
-        return new IResult() {
-            @Override
-            public String toString() {
-                return jsonResult.toString();
-            }
-        };
+        return result.toString();
     }
 }

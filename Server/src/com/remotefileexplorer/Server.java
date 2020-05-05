@@ -56,8 +56,8 @@ final class Server extends WebSocketServer {
                 throw new Exception("Команды на запись не разрешены!");
             }
 
-            String result = command.execute(this.workingDirectory).toString();
-            webSocket.send(result);
+            String result = command.execute(this.workingDirectory);
+            webSocket.send(Response.createOk(request, result));
 
             Logger.getGlobal().info(String.format("Результат обработки '%s'", result));
         } catch (Exception e) {

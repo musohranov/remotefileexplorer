@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://unpkg.com/jquery.terminal@2.x.x/js/jquery.terminal.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/jquery.terminal@2.x.x/css/jquery.terminal.min.css"/>
+    <style type="text/css"></style>
+</head>
+<body>
+    <script type="text/javascript">
+        /**
+         * Сервер файлового менеджера.
+         */
+        class FileExplorerServer {
+            /**
+             * Веб-сокет соединения.
+             */
+            static webSocket = null;
+
+            /**
+             * Установить связь с сервером.
+             * @param host Хост.
+             * @param port порт.
+             * @param onOpen Обработчик события "Соеднение установлено".
+             * @param onMessage Обработчик события "Пришло сообщение".
+             * @param onClose Обработчик события "Соединение закрыто".
+             * @param onError Обработчик события "Ошибка соединения".
+             * @returns {boolean} Флаг успешной инициализации (и только) соединения.
+             */
+            static connect(host, port, onOpen, onMessage, onClose, onError) {
+                if (this.isConnected()) {
+                    return false;
+                }
+
+                this.webSocket = new WebSocket(`ws://${host}:${port}`);
+
+                this.webSocket.onopen = onOpen;
+                this.webSocket.onclose = function() { FileExplorerServer.webSocket = null; onClose(); }
+                this.webSocket.onerror = function() { FileExplorerServer.webSocket = null; onError(); }
+                this.webSocket.onmessage = function(msg) {
+                    try {
+                        const response = JSON.parse(msg.data);
+                        onMessage(response.result_type === 'ok', response.result_body);
+                    } catch (e) {
+                        onMessage(false, `Произошла не предвиденная ошибка "${e}", при обработке ответа: ` + msg.data);
+                    }
+                }
+
+                return true;
+            }
+
+            /**
+             * Флаг наличия установленного соединения.
+             * @returns {boolean}
+             */
+            static isConnected() {
+                return this.webSocket !== null && this.webSocket.readyState === 1;
+            }
+
+            /**
+             * Уникальный счетчик идентификаторов отправляемых команд.
+             * Служит для отладки.
+             */
+            static idCommand = 1;
+
+            /**
+             * Отправить команду.
+             * @param cmdLine Строка команды.
+             * @returns {boolean} Флаг успешной отправки.
+             */
+            static sendCommand(cmdLine) {
+                if (!this.isConnected()) {
+                    return false;
+                }
+
+                this.webSocket.send(JSON.stringify({
+                    id: this.idCommand++,
+                    type: "command",
+                    body: cmdLine
+                }));
+
+                return true;
+            }
+
+            /**
+             * Разорвать соединие.
+             * @returns {boolean}.
+             */
+            static disconnect() {
+                if (!this.isConnected()) {
+                    return false;
+                }
+
+                this.webSocket.close();
+                return true;
+            }
+        }
+
+        /**
+         * Инициализация работы с терминалом.
+         */
+        $(function() {
+            $('body').terminal(function(cmdLine, terminal) {
+                const cmd = $.terminal.split_command(cmdLine);
+
+                if (!cmd.name) {
+                    return;
+                }
+
+                /**
+                 * Установить соединение.
+                 */
+                if (cmd.name === 'connect') {
+                    if (FileExplorerServer.isConnected()) {
+                        terminal.error('Соединение уже установлено! Воспользуетесь командой disconnect');
+                        return;
+                    }
+
+                    if (cmd.args.length !== 2) {
+                        terminal.error('Необходимо ввести хост и порт. Пример connect localhost 8080');
+                        return;
+                    }
+
+                    FileExplorerServer.connect(cmd.args[0], cmd.args[1],
+                        function() {
+                            terminal.echo('[[;green;]Соединение установлено. Что бы получить список доступных ' +
+                                'воспользуйтесь командой help]').resume();
+                        },
+                        function(success, body) {
+                            if (success) {
+                                terminal.echo(`[[;green;]${body}]`);
+                            } else {
+                                terminal.echo(`[[;yellow;]${body}]`);
+                            }
+                            terminal.resume();
+                        },
+                        function() {
+                            terminal.error('Соединение разорвано').resume();
+                        },
+                        function() {
+                            terminal.error('Ошибка соединения').resume();
+                        }
+                    );
+
+                    terminal.pause().echo('[[;gray;]Установка соединения]');
+                    return;
+                }
+
+                /**
+                 * Разорвать соединение.
+                 */
+                if (cmd.name === 'disconnect') {
+                    if (!FileExplorerServer.isConnected()) {
+                        terminal.error('Соединение не установлено');
+                    } else {
+                        FileExplorerServer.disconnect();
+                    }
+                    return;
+                }
+
+                /**
+                 * Отпрвить команду.
+                 */
+                if (FileExplorerServer.isConnected()) {
+                    if (FileExplorerServer.sendCommand(cmdLine)) {
+                        terminal.pause();
+                    }
+                } else {
+                    terminal.echo('Необходимо установить соединение командой connect');
+                }
+            }, {
+                greetings: 'Удаленная консоль файлового менеджера'
+            });
+        });
+  </script>
+</body>
+</html>

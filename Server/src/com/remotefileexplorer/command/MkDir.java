@@ -10,7 +10,7 @@ final class MkDir extends Command {
      * @param commandLine Строка с командой.
      */
     MkDir(final String commandLine) throws Exception {
-        super(commandLine, true);
+        super(commandLine, true, "Создать директорию. Пример mkdir c:\\test");
 
         if (!(this.name.equals("mkdir") && this.params.length == 1)) {
             throw new Exception("Не является командой mkdir!");
@@ -22,7 +22,7 @@ final class MkDir extends Command {
      * @param workingDirectory Рабочая директория.
      */
     @Override
-    public IResult execute(final File workingDirectory) throws ExecutionError {
+    public String execute(final File workingDirectory) throws ExecutionError {
         try {
             File directory = new File(workingDirectory.getAbsolutePath() + "/" + this.params[0]);
 
@@ -33,11 +33,6 @@ final class MkDir extends Command {
             throw new ExecutionError(e.getMessage());
         }
 
-        return new IResult() {
-            @Override
-            public String toString() {
-                return "";
-            }
-        };
+        return "Ok";
     }
 }
