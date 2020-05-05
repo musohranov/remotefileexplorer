@@ -10,7 +10,7 @@ final class RmDir extends Command {
      *
      */
     RmDir() {
-        super("rmdir", true, "Удалить директорию. Например rmdir c:\\test");
+        super("rmdir", true, "Удалить директорию. Например rmdir test");
     }
 
     /**

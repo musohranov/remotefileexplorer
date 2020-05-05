@@ -10,7 +10,7 @@ final class MkDir extends Command {
      *
      */
     MkDir() {
-        super("mkdir", true, "Создать директорию. Пример mkdir c:\\test");
+        super("mkdir", true, "Создать директорию. Например mkdir test");
     }
 
     /**

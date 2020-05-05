@@ -12,7 +12,7 @@ final class Dir extends Command {
      *
      */
     Dir() {
-        super("dir", false, "Вывести список файлов директории. Пример dir c:\\ ");
+        super("dir", false, "Вывести список файлов директории. Например dir или dir test");
     }
 
     /**

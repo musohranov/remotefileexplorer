@@ -32,6 +32,9 @@ public class CommandManager {
      *
      */
     private CommandManager() {
+        Help help = new Help();
+        commandList.put(help.name, help);
+
         Dir dir = new Dir();
         commandList.put(dir.name, dir);
 
@@ -40,9 +43,6 @@ public class CommandManager {
 
         RmDir rmdir = new RmDir();
         commandList.put(rmdir.name, rmdir);
-
-        Help help = new Help();
-        commandList.put(help.name, help);
     }
 
     /**
