@@ -1,6 +1,6 @@
 package com.remotefileexplorer;
 
-import com.remotefileexplorer.command.Command;
+import com.remotefileexplorer.command.CommandManager;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -51,12 +51,8 @@ final class Server extends WebSocketServer {
         try {
             request = new Request(message);
 
-            Command command = Command.getCommand(request.body.toLowerCase());
-            if (command.isWriteAccess && !this.writePermission) {
-                throw new Exception("Команды на запись не разрешены!");
-            }
-
-            String result = command.execute(this.workingDirectory);
+            String result =
+                    CommandManager.getInstance().execute(this.workingDirectory, this.writePermission, request.body);
             webSocket.send(Response.createOk(request, result));
 
             Logger.getGlobal().info(String.format("Результат обработки '%s'", result));

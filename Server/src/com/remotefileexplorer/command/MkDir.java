@@ -7,32 +7,29 @@ import java.io.File;
  */
 final class MkDir extends Command {
     /**
-     * @param commandLine Строка с командой.
+     *
      */
-    MkDir(final String commandLine) throws Exception {
-        super(commandLine, true, "Создать директорию. Пример mkdir c:\\test");
-
-        if (!(this.name.equals("mkdir") && this.params.length == 1)) {
-            throw new Exception("Не является командой mkdir!");
-        }
+    MkDir() {
+        super("mkdir", true, "Создать директорию. Пример mkdir c:\\test");
     }
 
     /**
      * Выполнить команду.
      * @param workingDirectory Рабочая директория.
+     * @param params Параметры.
      */
     @Override
-    public String execute(final File workingDirectory) throws ExecutionError {
-        try {
-            File directory = new File(workingDirectory.getAbsolutePath() + "/" + this.params[0]);
-
-            if (directory.exists() || !directory.mkdir()) {
-                throw new Exception("Ошибка создания директории!");
-            }
-        } catch (Exception e) {
-            throw new ExecutionError(e.getMessage());
+    String execute(File workingDirectory, String[] params) throws Exception {
+        if (params.length != 1) {
+            throw new Exception("Параметры команды заданы не верно!");
         }
 
-        return "Ok";
+        File directory = new File(workingDirectory.getAbsolutePath() + "/" + params[0]);
+
+        if (directory.exists() || !directory.mkdir()) {
+            throw new Exception("Ошибка создания директории!");
+        }
+
+        return this.SUCCESS;
     }
 }

@@ -7,31 +7,33 @@ import java.io.File;
  */
 final class RmDir extends Command {
     /**
-     * @param commandLine Строка с командой.
+     *
      */
-    RmDir(final String commandLine) throws Exception {
-        super(commandLine, true, "Удалить директорию. Например rmdir c:\\test");
-
-        if (!(this.name.equals("rmdir") && this.params.length == 1)) {
-            throw new Exception("Не является командой rmdir!");
-        }
+    RmDir() {
+        super("rmdir", true, "Удалить директорию. Например rmdir c:\\test");
     }
 
     /**
      * Выполнить команду.
      * @param workingDirectory Рабочая директория.
+     * @param params Параметры.
      */
     @Override
-    public String execute(final File workingDirectory) throws ExecutionError {
-        try {
-            File directory = new File(workingDirectory.getAbsolutePath() + "/" + this.params[0]);
-            if (!directory.delete()) {
-                throw new Exception("Ошибка удаления директории!");
-            }
-        } catch (Exception e) {
-            throw new ExecutionError(e.getMessage());
+    String execute(File workingDirectory, String[] params) throws Exception {
+        if (params.length != 1) {
+            throw new Exception("Параметры команды заданы не верно!");
         }
 
-        return "Ok";
+        File directory = new File(workingDirectory.getAbsolutePath() + "/" + params[0]);
+
+        if (!directory.isDirectory()) {
+            throw new Exception("Директория указана не верно!");
+        }
+
+        if (!directory.delete()) {
+            throw new Exception("Ошибка удаления директории!");
+        }
+
+        return this.SUCCESS;
     }
 }

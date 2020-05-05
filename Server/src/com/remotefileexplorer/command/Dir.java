@@ -1,7 +1,5 @@
 package com.remotefileexplorer.command;
 
-import org.json.simple.JSONObject;
-
 import java.io.File;
 import java.util.Objects;
 import java.util.StringJoiner;
@@ -11,30 +9,38 @@ import java.util.StringJoiner;
  */
 final class Dir extends Command {
     /**
-     * @param commandLine Строка с командой.
+     *
      */
-    Dir(final String commandLine) throws Exception {
-        super(commandLine, false, "Вывести список файлов директории. Пример dir c:");
-
-        if (!(this.name.equals("dir") && this.params.length <= 1)) {
-            throw new Exception("Не является командой dir!");
-        }
+    Dir() {
+        super("dir", false, "Вывести список файлов директории. Пример dir c:\\ ");
     }
 
     /**
      * Выполнить команду.
      * @param workingDirectory Рабочая директория.
+     * @param params Параметры.
      */
     @Override
-    public String execute(final File workingDirectory) {
+    String execute(File workingDirectory, String[] params) throws Exception {
         StringJoiner result = new StringJoiner("\n");
 
+        if (params.length > 1) {
+            throw new Exception("Параметры команды заданы не верно!");
+        }
+
         // Если указана под-директория, выполняем команду в контексте нее, иначе из рабочей
-        File directory = this.params.length == 0 ? workingDirectory
-                : new File(workingDirectory.getAbsolutePath() + "/" + this.params[0]);
+        File directory = params.length == 0 ? workingDirectory
+                : new File(workingDirectory.getAbsolutePath() + "/" + params[0]);
+
+        if (!directory.isDirectory()) {
+            throw new Exception("Директория указана не верно!");
+        }
 
         for (File file : Objects.requireNonNull(directory.listFiles())) {
-            result.add(String.format("%s %s %s",
+            // Сформировать строку результата,
+            // для файла        :    file_name, size
+            // для директории   :-d- dir_name
+            result.add(String.format("%s %s%s",
                     file.isDirectory() ? "-d-" : "   ",
                     file.getName(),
                     file.isDirectory() ? "" : ", " + file.length()));
