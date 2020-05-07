@@ -32,17 +32,10 @@ public class CommandManager {
      *
      */
     private CommandManager() {
-        Help help = new Help();
-        commandList.put(help.name, help);
-
-        Dir dir = new Dir();
-        commandList.put(dir.name, dir);
-
-        MkDir mkdir = new MkDir();
-        commandList.put(mkdir.name, mkdir);
-
-        RmDir rmdir = new RmDir();
-        commandList.put(rmdir.name, rmdir);
+        for (Command command :
+                new Command[]{new Help(), new Dir(), new MkDir(), new RmDir(), new Shell()}) {
+            commandList.put(command.name, command);
+        }
     }
 
     /**
