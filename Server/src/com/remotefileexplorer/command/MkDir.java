@@ -24,7 +24,7 @@ final class MkDir extends Command {
             throw new Exception("Параметры команды заданы не верно!");
         }
 
-        File directory = new File(workingDirectory.getAbsolutePath() + "/" + params[0]);
+        File directory = new File(workingDirectory, params[0]);
 
         if (directory.exists() || !directory.mkdir()) {
             throw new Exception("Ошибка создания директории!");
