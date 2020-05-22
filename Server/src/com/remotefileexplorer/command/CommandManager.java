@@ -21,7 +21,7 @@ public class CommandManager {
         }
 
         return commandManager;
-    };
+    }
 
     /**
      * Список доступных команд.
