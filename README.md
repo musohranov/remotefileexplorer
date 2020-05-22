@@ -29,7 +29,41 @@ _порт_ http соединения.
 * help, задача которой отобразить пользователю список доступных для выполнения команд
 
    
-## Пример работы
+## Пример
+
+* Запуск сервера
+```sh
+java -jar RemoteFileExplorer.jar
+Использование: RemoteFileExplorer.jar -p Порт -d Директория [-w]
+ -d <Директория>   Рабочая директория относительно которой происходит
+                   выполнения команд
+ -p <Порт>         Порт web сервера
+ -w                Разрешение на запись
+```
+
+```sh
+java -jar RemoteFileExplorer.jar -d . -p 8080 -w
+мая 22, 2020 9:55:55 PM com.remotefileexplorer.transport.Server start
+INFO: Файловый сервер запущен с настройками
+Рабочая директория = .
+Разрешение на запись = true
+Порт web сервера = 8080
+мая 22, 2020 9:56:37 PM com.remotefileexplorer.transport.Server onMessage
+INFO: Обрабатывается запрос '{"id":1,"type":"command","body":"dir"}'
+мая 22, 2020 9:56:37 PM com.remotefileexplorer.transport.Server onMessage
+INFO: Результат обработки '-d- .git
+-d- .idea
+-d- Client
+-d- docs
+-d- out
+    README.md, 5156
+    RemoteFileExplorer.iml, 643
+    RemoteFileExplorer.jar, 235724
+-d- Server'
+```
+
+* Работа в консоли 
+
 ![](docs/example.png)
 
 ## Предлагаемые доработки
